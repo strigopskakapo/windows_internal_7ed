@@ -69,3 +69,15 @@ Windows ne maintient que l'ID du processus créateur, pas de lien vers le créat
 
 ##### Threads
 ___
+Un thread comprend les composants essentiels suivants :
+- Un ensemble de registres de processeur représentant l'état du processeur
+deux piles - l'une que le thread utilise lors de l'exécution en mode kernel et l'autre pour l'exécution en mode utilisateur
+- Une zone de stockage privée appelée thread-local storage (TLS) à utiliser par les sous-systèmes, les bibliothèques d'exécution et les DLL
+- Un identificateur unique appelé ID de thread (partie d'une structure interne appelée ID de client - les IDs de processus et de threads sont générés à partir du même espace de noms, de sorte qu'ils ne se chevauchent jamais)
+- Les threads ont parfois leur propre contexte de sécurité ou jeton, souvent utilisé par les applications serveur multithreadées qui se font passer pour le contexte de sécurité des clients qu'elles servent.
+
+Les registres volatils, les piles et la zone de stockage privée sont appelés le contexte du thread (Utilisez GetThreadContext() ou Wow64GetThreadContext() pour obtenir le contexte.)
+
+La commutation d'exécution entre les threads implique l'ordonnanceur de noyau et peut être une opération coûteuse. Pour réduire ce coût, Windows implémente deux mécanismes : **fibers** et **user-mode scheduling (UMS)**.
+
+> :memo: Les threads d'une application 32 bits s'exécutant sur une version 64 bits de Windows contiendront à la fois des contextes 32 bits et 64 bits, que Wow64 (Windows on Windows) utilisera pour basculer l'application de l'exécution en mode 32 bits à 64 bits lorsque nécessaire. Ces threads auront deux piles utilisateur et deux blocs CONTEXT, et les fonctions habituelles de l'API Windows retourneront le contexte 64 bits. Toutefois, la fonction Wow64GetThreadContext retournera le contexte 32 bits. Voir le chapitre 8 de la partie 2 pour plus d'informations sur Wow64.
