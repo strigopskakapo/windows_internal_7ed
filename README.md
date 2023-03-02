@@ -81,3 +81,36 @@ Les registres volatils, les piles et la zone de stockage privée sont appelés l
 La commutation d'exécution entre les threads implique l'ordonnanceur de noyau et peut être une opération coûteuse. Pour réduire ce coût, Windows implémente deux mécanismes : **fibers** et **user-mode scheduling (UMS)**.
 
 > :memo: Les threads d'une application 32 bits s'exécutant sur une version 64 bits de Windows contiendront à la fois des contextes 32 bits et 64 bits, que Wow64 (Windows on Windows) utilisera pour basculer l'application de l'exécution en mode 32 bits à 64 bits lorsque nécessaire. Ces threads auront deux piles utilisateur et deux blocs CONTEXT, et les fonctions habituelles de l'API Windows retourneront le contexte 64 bits. Toutefois, la fonction Wow64GetThreadContext retournera le contexte 32 bits. Voir le chapitre 8 de la partie 2 pour plus d'informations sur Wow64.
+
+## Fibers
+____
+
+Les "user-mode threads" (threads en mode utilisateur) permettent à une application de planifier ses propres "threads" d'exécution plutôt que de s'appuyer sur le mécanisme de planification basé sur les priorités intégré à Windows. Ils sont plus légers et invisibles pour le noyau car ils sont implémentés en mode utilisateur dans Kernel32.dll. On peut les comparer aux "goroutines" en Go.
+
+## User-mode scheduling threads
+___
+
+User-mode scheduling (UMS) threads est uniquement disponible sur les versions 64 bits de Windows. Fournissent les mêmes avantages de base que les fibres, sans beaucoup de leurs inconvénients.
+
+Ont leur propre état de thread du noyau et sont donc visibles du noyau, ce qui permet à plusieurs threads UMS d'émettre des appels système bloquants, de partager et de lutter pour les ressources et d'avoir un état par thread.
+
+Cependant, tant que deux ou plusieurs threads UMS ont seulement besoin d'effectuer un travail en mode utilisateur, ils peuvent périodiquement basculer les contextes d'exécution (en cédant d'un thread à un autre) sans impliquer le planificateur : la commutation de contexte est effectuée en mode utilisateur.
+Du point de vue du noyau, le même thread du noyau est toujours en cours d'exécution et rien n'a changé. Lorsqu'un thread UMS effectue une opération nécessitant l'entrée dans le noyau (comme un appel système), il bascule vers son thread du noyau dédié (appelé commutation de contexte dirigée).
+
+Tous les threads dans un processus ont un accès complet en lecture-écriture à l'espace d'adressage virtuel du processus.
+Les threads ne peuvent pas accidentellement référencer l'espace d'adressage d'un autre processus, sauf si l'autre processus met à disposition une partie de son espace d'adressage privé en tant que section de mémoire partagée (appelée objet de mappage de fichier dans l'API Windows) ou si un processus a le droit d'ouvrir un autre processus pour utiliser des fonctions de mémoire interprocessus telles que ReadProcessMemory() et WriteProcessMemory().
+
+En plus d'un espace d'adressage privé et d'un ou plusieurs threads, chaque processus a un contexte de sécurité
+et une liste de poignées ouvertes vers des objets du noyau tels que des fichiers, des mutex, des événements ou des sémaphores ...
+
+<p align="center"><img src="https://i.imgur.com/MSIUr1C.png" width="400px" height="auto"></p>
+
+Les virtual address descriptors (VADs) sont des structures de données que le gestionnaire de mémoire utilise pour suivre les adresses virtuelles que le processus utilise.
+
+Par défaut, les threads n'ont pas leur propre jeton d'accès, mais ils peuvent en obtenir un, ce qui permet à chaque thread d'usurper le contexte de sécurité d'un autre processus, y compris des processus sur un système Windows distant, sans affecter les autres threads du processus.
+
+## Jobs
+___
+
+Windows fournit une extension au modèle de processus appelé un "job".
+La principale fonction d'un objet de travail est de permettre la gestion et la manipulation de groupes de processus en tant qu'unité. En quelque sorte, l'objet de travail compense l'absence d'arbre de processus structuré dans Windows, mais dans bien des cas, il est plus puissant qu'un arbre de processus de style UNIX.
