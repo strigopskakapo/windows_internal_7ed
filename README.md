@@ -31,12 +31,9 @@ Common Language Runtime : L'une des fonctions principales du CLR est de fournir 
 > :memo: Tous les composants du framework Dotnet sont implémentés en tant que DLL Windows standard en mode utilisateur (rien ne s'exécute en mode noyau) [2].
 
 > :memo: Le code géré (code exécuté par le CLR) et le code non géré (par exemple, les API de code natif, telles que Win32) peuvent coexister dans une même application [1].
-
-<div style="text-align: center;">
-
-![Relations between .NET and the Windows OS](https://i.imgur.com/3v7aTwK.png)
-
-</div>
+<p align="center">
+<img src="https://i.imgur.com/3v7aTwK.png" )
+</p>
 
 ##### Services, functions and routines
 ___
