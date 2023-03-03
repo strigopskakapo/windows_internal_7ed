@@ -114,3 +114,36 @@ ___
 
 Windows fournit une extension au modèle de processus appelé un "job".
 La principale fonction d'un objet de travail est de permettre la gestion et la manipulation de groupes de processus en tant qu'unité. En quelque sorte, l'objet de travail compense l'absence d'arbre de processus structuré dans Windows, mais dans bien des cas, il est plus puissant qu'un arbre de processus de style UNIX.
+
+## Virtual Memory
+___
+
+Windows utilise un système de mémoire virtuelle basé sur un espace d'adressage plat (linéaire) qui fournit à chaque processus l'illusion d'avoir son propre grand espace d'adressage privé.
+À l'exécution, le gestionnaire de mémoire, avec l'aide du matériel, traduit ou mappe les adresses virtuelles en adresses physiques, où les données sont réellement stockées.
+En contrôlant la protection et le mapping, le système d'exploitation peut s'assurer que les processus individuels ne se heurtent pas les uns aux autres ou n'écrasent pas les données du système d'exploitation.
+
+<p align="center"><img src="https://i.imgur.com/K8c0GAm.png" width="400px" height="auto"></p>
+
+Étant donné que la plupart des systèmes ont beaucoup moins de mémoire physique que la mémoire virtuelle totale utilisée par les processus en cours d'exécution, le gestionnaire de mémoire transfère ou pagine certaines parties de la mémoire vers le disque.
+
+La pagination des données sur le disque libère de la mémoire physique pour qu'elle puisse être utilisée par d'autres processus ou par le système d'exploitation lui-même. Lorsqu'un thread accède à une adresse virtuelle qui a été paginée sur le disque, le gestionnaire de mémoire virtuelle charge les informations de nouveau en mémoire depuis le disque.
+
+Les applications n'ont pas besoin d'être modifiées de quelque manière que ce soit pour profiter de la pagination, car le support matériel permet au gestionnaire de mémoire de paginer sans la connaissance ou l'aide des processus ou des threads.
+
+La taille de l'espace d'adressage virtuel varie pour chaque plateforme matérielle.
+
+Sur un x86 32 bits, un processus peut adresser un espace de mémoire de 4 Go.
+
+Par défaut, Windows alloue la moitié de cet espace d'adressage (la moitié inférieure de l'espace d'adressage virtuel de 4 Go, de __0x00000000 à 0x7FFFFFFF__) aux processus pour leur stockage privé unique.
+et utilise l'autre moitié (la moitié supérieure, les adresses de __0x80000000 à 0xFFFFFFFF__) pour son propre usage de mémoire OS protégée.
+
+Windows prend en charge des options de démarrage (le qualificateur increaseuserva dans la base de données de configuration de démarrage) qui donnent aux processus exécutant des programmes spécialement marqués (le drapeau de grand espace d'adressage doit être défini dans l'en-tête de l'image exécutable) la capacité d'utiliser jusqu'à 3 Go d'espace d'adressage privé (en laissant 1 Go pour le noyau).
+
+Bien que 3 Go soient meilleurs que 2 Go, ce n'est toujours pas suffisant pour mapper des bases de données très volumineuses (multigigaoctets).
+Pour répondre à ce besoin sur les systèmes 32 bits, Windows fournit un mécanisme appelé Address Windowing Extension (AWE), qui permet à une application 32 bits d'allouer jusqu'à 64 Go de mémoire physique, puis de mapper des vues, ou fenêtres, dans son espace d'adressage virtuel de 2 Go.
+
+Bien que l'utilisation d'AWE impose au programmeur la charge de gérer les mappings de la mémoire virtuelle à la mémoire physique, elle répond au besoin d'accéder directement à plus de mémoire physique que ce qui peut être mappé à un moment donné dans l'espace d'adressage des processus 32 bits.
+
+Windows 64 bits fournit un espace d'adressage beaucoup plus grand pour les processus :
+- 7152 Go sur les systèmes IA-64
+et 8192 Go sur les systèmes x
