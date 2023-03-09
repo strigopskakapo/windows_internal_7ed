@@ -153,14 +153,24 @@ et 8192 Go sur les systèmes x
 ## Kernel Mode vs. User Mode
 
 Pour empêcher les applications utilisateur de modifier les données critiques du système d'exploitation, Windows utilise deux modes d'accès au processeur (même si le processeur sur lequel Windows s'exécute prend en charge plus de deux modes): le mode utilisateur et le mode noyau.
+
 Le code de l'application utilisateur s'exécute en mode utilisateur, tandis que le code du système d'exploitation (tel que les services système et les pilotes de périphériques) s'exécute en mode noyau.
+
 Le mode noyau fait référence à un mode d'exécution dans un processeur qui accorde l'accès à toute la mémoire système et à toutes les instructions du processeur.
+
 Bien que chaque processus Windows ait son propre espace mémoire privé, le code du système d'exploitation et du pilote de périphérique en mode noyau partage un seul espace d'adressage virtuel.
+
 Chaque page de la mémoire virtuelle est marquée pour indiquer dans quel mode d'accès le processeur doit être pour lire et/ou écrire la page.
+
 Les pages de l'espace système ne peuvent être accédées qu'en mode noyau, tandis que toutes les pages de l'espace d'adressage utilisateur sont accessibles en mode utilisateur.
+
 Les pages en lecture seule (telles que celles qui contiennent des données statiques) ne sont pas modifiables à partir d'un mode quelconque.
+
 De plus, sur les processeurs qui prennent en charge la protection de la mémoire sans exécution, Windows marque les pages contenant des données comme non exécutables, empêchant ainsi l'exécution accidentelle ou malveillante de code dans les zones de données.
+
 Windows 32 bits ne fournit aucune protection pour la mémoire système privée en lecture/écriture utilisée par les composants s'exécutant en mode noyau.
 En d'autres termes, une fois en mode noyau, le code du système d'exploitation et du pilote de périphérique a un accès complet à la mémoire de l'espace système et peut contourner la sécurité de Windows pour accéder aux objets.
 
-Note : Le mode utilisateur est utilisé pour les applications d'utilisateur, tandis que le mode noyau est utilisé pour les services système et les pilotes de périphériques. Le mode noyau permet aux programmes d'accéder à l'espace système et aux ressources matérielles du système, tandis que le mode utilisateur a un accès limité à ces ressources. Les programmes en mode utilisateur s'exécutent dans un environnement isolé, tandis que les programmes en mode noyau s'exécutent dans un environnement partagé.
+> :memo: Note : Le mode utilisateur est utilisé pour les applications d'utilisateur, tandis que le mode noyau est utilisé pour les services système et les pilotes de périphériques. Le mode noyau permet aux programmes d'accéder à l'espace système et aux ressources matérielles du système, tandis que le mode utilisateur a un accès limité à ces ressources. Les programmes en mode utilisateur s'exécutent dans un environnement isolé, tandis que les programmes en mode noyau s'exécutent dans un environnement partagé.
+
+
