@@ -173,4 +173,32 @@ En d'autres termes, une fois en mode noyau, le code du système d'exploitation e
 
 > :memo: Note : Le mode utilisateur est utilisé pour les applications d'utilisateur, tandis que le mode noyau est utilisé pour les services système et les pilotes de périphériques. Le mode noyau permet aux programmes d'accéder à l'espace système et aux ressources matérielles du système, tandis que le mode utilisateur a un accès limité à ces ressources. Les programmes en mode utilisateur s'exécutent dans un environnement isolé, tandis que les programmes en mode noyau s'exécutent dans un environnement partagé.
 
+## Terminal Services and Multiples Sessions
 
+Les Services Terminal font référence à la prise en charge de Windows pour plusieurs sessions utilisateur interactives sur un seul système.
+
+Avec les Services Terminal de Windows, un utilisateur distant peut établir une session sur une autre machine, se connecter et exécuter des applications sur le serveur.
+
+Le serveur transmet l'interface utilisateur graphique au client (ainsi que d'autres ressources configurables telles que l'audio et le presse-papiers), et le client transmet l'entrée de l'utilisateur de retour au serveur.
+
+De manière similaire au système __X Window__, Windows permet d'exécuter des applications individuelles sur un système de serveur avec l'affichage à distance vers le client au lieu de la totalité du bureau à distance.
+
+> :memo: X Window System est un protocle de système de fenêtrage qui gère l'écran, la souris et égaleent le clavier. 
+
+> :memo: Notez que la prise en charge du Client Windows ne permet qu'à un utilisateur distant de se connecter à la machine, cependant dans Windows Server, elle prend en charge 2 connexions distantes simultanées.
+
+## Security 
+
+Windows possède trois formes de contrôle d'accès sur les objets :
+
+- Contrôle d'accès discrétionnaire (DAC) / Discretionary Access Control : 
+
+    - Cette forme de contrôle d'accès permet au propriétaire d'un objet de contrôler l'accès à cet objet. Le propriétaire peut spécifier quels utilisateurs ou groupes peuvent accéder à l'objet et quel niveau d'accès ils ont. Ce niveau de contrôle d'accès est discrétionnaire, ce qui signifie qu'il appartient au propriétaire de décider d'autoriser ou non l'accès.
+
+- Contrôle d'accès privilégié (PAC).
+
+    - Cette forme de contrôle d'accès est utilisée pour contrôler l'accès aux ressources privilégiées, telles que les fichiers système et les clés de registre. Elle est basée sur le principe du moindre privilège, ce qui signifie que les utilisateurs ou les processus ne doivent avoir que le niveau d'accès minimum nécessaire pour effectuer leurs tâches. Le PAC garantit que seuls les utilisateurs ou les processus autorisés sont autorisés à accéder à ces ressources.
+    
+- Contrôle d'intégrité obligatoire (MAC).
+
+    - Cette forme de contrôle d'accès est utilisée pour appliquer des politiques de contrôle d'accès obligatoire aux objets. Ces politiques sont basées sur le niveau d'intégrité de l'objet, qui est déterminé par le niveau de sécurité de l'utilisateur ou du processus qui l'a créé. Le MAC garantit que seuls les utilisateurs ou les processus ayant le niveau d'intégrité requis peuvent accéder à l'objet. Ce niveau de contrôle d'accès est obligatoire, ce qui signifie qu'il ne peut pas être outrepassé par des politiques de contrôle d'accès discrétionnaires.
